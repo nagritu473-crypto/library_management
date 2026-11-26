@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+{% extends 'library/base.html' %}
+{% block title %}All Issues - LibraryHub{% endblock %}
+{% block content %}
+<h1>All Book Issues</h1>
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ issued_count }}</div>
+        <div>Currently Issued</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #ffd89b, #fbb034);">
+        <div class="stat-number">{{ returned_count }}</div>
+        <div>Returned</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #ffaaa5, #ff8a80);">
+        <div class="stat-number">{{ overdue_count }}</div>
+        <div>Overdue</div>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Book</th>
+            <th>Issue Date</th>
+            <th>Expected Return</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for issue in issues %}
+        <tr>
+            <td>{{ issue.user.username }}</td>
+            <td>{{ issue.book.title }}</td>
+            <td>{{ issue.issue_date }}</td>
+            <td>{{ issue.expected_return_date }}</td>
+            <td>
+                <span style="padding: 0.5rem 1rem; border-radius: 20px; background: {% if issue.status == 'issued' %}#a8e6cf{% elif issue.status == 'returned' %}#ffd89b{% else %}#ffaaa5{% endif %}; color: #333;">
+                    {{ issue.get_status_display }}
+                </span>
+            </td>
+            <td>
+                {% if issue.status == 'issued' and user == issue.user %}
+                    <form method="post" action="{% url 'return_book' issue.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Return</button>
+                    </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends 'library/base.html' %}
+{% block title %}Login - LibraryHub{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 0 auto;">
+    <h2 style="text-align: center; color: #4a90e2; margin-bottom: 2rem;">Welcome Back</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn" style="width: 100%;">Login</button>
+    </form>
+    <p style="text-align: center; margin-top: 1.5rem;">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+</div>
+{% endblock %}

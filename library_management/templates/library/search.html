@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+{% extends 'library/base.html' %}
+{% block title %}Search Books - LibraryHub{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>Search Books</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Search</button>
+    </form>
+</div>
+
+{% if books %}
+<h3>Results ({{ books|length }})</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Available</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.author }}</td>
+            <td>
+                {% if book.available_copies > 0 %}
+                    <span style="color: #2d5a3e;">{{ book.available_copies }} available</span>
+                {% else %}
+                    <span style="color: #e74c3c;">Not available</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if book.available_copies > 0 and user.is_authenticated %}
+                    <form method="post" action="{% url 'issue_book' book.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary" onclick="return confirm('Issue this book?')">Issue</button>
+                    </form>
+                {% elif not user.is_authenticated %}
+                    <a href="{% url 'login' %}" class="btn btn-secondary" style="font-size: 0.9rem;">Login to Issue</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock %}
+
+
+</body>
+</html>

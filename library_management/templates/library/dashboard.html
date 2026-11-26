@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+{% extends 'library/base.html' %}
+{% block title %}Dashboard - LibraryHub{% endblock %}
+{% block content %}
+<h1 style="text-align: center; color: #4a90e2; margin-bottom: 2rem;">Your Dashboard</h1>
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ issued_count }}</div>
+        <div>Books Issued</div>
+    </div>
+    <div class="stat-card" style="background: linear-gradient(135deg, #ffd89b, #fbb034);">
+        <div class="stat-number">{{ returned_count }}</div>
+        <div>Books Returned</div>
+    </div>
+</div>
+<h2>Your Books</h2>
+{% if issues %}
+<table class="table">
+    <thead>
+        <tr>
+            <th>Book</th>
+            <th>Issue Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for issue in issues %}
+        <tr>
+            <td>{{ issue.book.title }}</td>
+            <td>{{ issue.issue_date }}</td>
+            <td>
+                <span style="padding: 0.5rem 1rem; border-radius: 20px; background: {% if issue.status == 'issued' %}#a8e6cf{% elif issue.status == 'returned' %}#ffd89b{% else %}#ffaaa5{% endif %}; color: #2d5a3e;">
+                    {{ issue.get_status_display }}
+                </span>
+                {% if issue.status == 'issued' %}
+                <form method="post" action="{% url 'return_book' issue.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-secondary" style="margin-top: 0.5rem; font-size: 0.9rem;">Return</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No books issued yet. <a href="{% url 'search' %}">Search books</a> to issue one!</p>
+{% endif %}
+<a href="{% url 'search' %}" class="btn" style="margin-top: 2rem;">Find New Books</a>
+{% endblock %}
+
+
+</body>
+</html>
